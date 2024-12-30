@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>銀盾</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="container">
+    <h1>銀盾</h1>
+    <label>
+      <input type="checkbox" id="toggleBlock" />
+      有効
+    </label>
+    <div class="input-section">
+      <input type="text" id="wordInput" placeholder="検閲ワードを追加">
+      <button id="addButton" class="add-btn">追加</button>
+    </div>
+    <ul id="wordList"></ul>
+
+    <div id="footer">
+      <a href="https://abatbeliever.net/app/chrome/#ginzyun" target="_blank" class="footer-link">
+        銀盾v1.0 2024 ABATBeliever.
+      </a>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
