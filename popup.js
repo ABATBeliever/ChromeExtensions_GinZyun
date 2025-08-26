@@ -1,107 +1,73 @@
-//銀盾v1.0
-//2024 ABATBeliever
-document.addEventListener("DOMContentLoaded", () => {
-  const wordInput = document.getElementById("wordInput");
-  const addButton = document.getElementById("addButton");
-  const wordList = document.getElementById("wordList");
-  const toggleBlock = document.getElementById("toggleBlock");
+document.addEventListener("DOMContentLoaded", async () => {
+  const enabledCheckbox = document.getElementById("enabled");
+  const patternInput = document.getElementById("pattern-input");
+  const addButton = document.getElementById("add-rule");
 
-  chrome.storage.local.get(["blocklist", "blockEnabled"], (result) => {
-    const blocklist = result.blocklist || [];
-    blocklist.forEach(word => addWordToList(word));
-    
-    toggleBlock.checked = result.blockEnabled !== false;
+  await loadState();
 
-    if (toggleBlock.checked) {
-      updateRules(blocklist);
-    }
+  enabledCheckbox.addEventListener("change", async () => {
+    await chrome.runtime.sendMessage({ action: "toggleAll", enabled: enabledCheckbox.checked });
+    await loadState();
   });
 
-  toggleBlock.addEventListener("change", () => {
-    const isEnabled = toggleBlock.checked;
-    chrome.storage.local.set({ blockEnabled: isEnabled }, () => {
-      chrome.storage.local.get("blocklist", (result) => {
-        const blocklist = result.blocklist || [];
-        updateRules(blocklist);
-      });
-    });
+  addButton.addEventListener("click", async () => {
+    const input = patternInput.value.trim();
+    if (!input) return;
+    const regex = wildcardToRegex(input);
+    try { new RegExp(regex); } catch { alert("無効なパターンです"); return; }
+    await chrome.runtime.sendMessage({ action: "addRule", pattern: regex });
+    patternInput.value = "";
+    await loadState();
   });
 
-  addButton.addEventListener("click", () => {
-    const word = wordInput.value.trim();
-    if (word) {
-      chrome.storage.local.get(["blocklist"], (result) => {
-        const blocklist = result.blocklist || [];
-        if (!blocklist.includes(word)) {
-          blocklist.push(word);
-          chrome.storage.local.set({ blocklist }, () => {
-            addWordToList(word);
-            updateRules(blocklist);
-            wordInput.value = "";
-          });
-        }
-      });
-    }
-  });
-
-  function addWordToList(word) {
-    const li = document.createElement("li");
-    li.textContent = word;
-    const removeButton = document.createElement("button");
-    removeButton.textContent = "削除";
-    removeButton.addEventListener("click", () => {
-      chrome.storage.local.get(["blocklist"], (result) => {
-        const blocklist = result.blocklist || [];
-        const newBlocklist = blocklist.filter(item => item !== word);
-        chrome.storage.local.set({ blocklist: newBlocklist }, () => {
-          li.remove();
-          updateRules(newBlocklist);
-        });
-      });
-    });
-    li.appendChild(removeButton);
-    wordList.appendChild(li);
+  async function loadState() {
+    const { enabled, rules } = await chrome.storage.local.get(["enabled", "rules"]);
+    enabledCheckbox.checked = enabled;
+    renderRules(rules || []);
   }
 
-  function updateRules(blocklist = []) {
-    chrome.storage.local.get(["blockEnabled"], (result) => {
-      const blockEnabled = result.blockEnabled !== false;
-      if (!blockEnabled) {
-        chrome.declarativeNetRequest.getDynamicRules((existingRules) => {
-          const existingRuleIds = existingRules.map(rule => rule.id);
-          chrome.declarativeNetRequest.updateDynamicRules({
-            removeRuleIds: existingRuleIds
-          });
-        });
-        return;
-      }
+  function renderRules(rules) {
+    const container = document.getElementById("rules");
+    container.innerHTML = "";
+    rules.forEach(rule => {
+      const div = document.createElement("div");
+      div.className = "rule";
 
-      chrome.declarativeNetRequest.getDynamicRules((existingRules) => {
-        const existingRuleIds = existingRules.map(rule => rule.id);
-        chrome.declarativeNetRequest.updateDynamicRules({
-          removeRuleIds: existingRuleIds
-        }, () => {
-          const newRules = blocklist.map((word, index) => {
-            const hasNonASCII = /[^\x00-\x7F]/.test(word);
-            const urlFilterWord = hasNonASCII ? encodeURIComponent(word) : word;
-            return {
-              id: index + 1,
-              priority: 1,
-              action: { type: "block" },
-              condition: {
-                urlFilter: urlFilterWord,
-                resourceTypes: ["main_frame"]
-              }
-            };
-          });
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = rule.enabled;
+      checkbox.addEventListener("change", () => toggleRule(rule.id, checkbox.checked));
 
-          chrome.declarativeNetRequest.updateDynamicRules({
-            addRules: newRules
-          }, () => {
-            console.log("Rules updated");
-          });
-        });
-      });
+      const span = document.createElement("span");
+      span.textContent = rule.pattern;
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "delete-btn";
+      delBtn.innerHTML = "x";
+      delBtn.addEventListener("click", () => removeRule(rule.id));
+
+      div.appendChild(checkbox);
+      div.appendChild(span);
+      div.appendChild(delBtn);
+      container.appendChild(div);
     });
+  }
+
+  async function toggleRule(id, enabled) {
+    await chrome.runtime.sendMessage({ action: "toggleRule", id, enabled });
+    await loadState();
+  }
+
+  async function removeRule(id) {
+    await chrome.runtime.sendMessage({ action: "removeRule", id });
+    await loadState();
+  }
+
+  function wildcardToRegex(input) {
+    let pattern = input.trim();
+    if (!/^https?:\/\//.test(pattern)) pattern = "*://" + pattern;
+    pattern = pattern.replace(/\./g, "\\.").replace(/\*/g, ".*").replace("\\:\\/\\/", "://");
+    return "^" + pattern + "$";
   }
 });
+

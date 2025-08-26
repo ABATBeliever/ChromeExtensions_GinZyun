@@ -1,30 +1,26 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>銀盾</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>銀盾 Page Blocker</title>
+<style>
+body{font-family:system-ui,sans-serif;min-width:320px;padding:12px;background:#f9f9f9;color:#333}h1{font-size:16px;font-weight:700;margin:0 0 10px 0;text-align:center}.toggle-container{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.toggle-label{font-size:14px;font-weight:700}.toggle-switch{position:relative;width:42px;height:24px}.toggle-switch input{display:none}.toggle-slider{position:absolute;cursor:pointer;background-color:#ccc;border-radius:24px;top:0;left:0;right:0;bottom:0;transition:0.3s}.toggle-slider:before{content:"";position:absolute;height:18px;width:18px;left:3px;bottom:3px;background-color:#fff;border-radius:50%;transition:0.3s}.toggle-switch input:checked+.toggle-slider{background-color:#0078d7}.toggle-switch input:checked+.toggle-slider:before{transform:translateX(18px)}input[type="text"]{width:100%;padding:6px 8px;font-size:14px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;margin-bottom:8px}button#add-rule{display:block;width:100%;padding:8px;font-size:14px;background-color:#0078d7;color:#fff;border:none;border-radius:4px;cursor:pointer;margin-bottom:12px;transition:background-color 0.2s}button#add-rule:hover{background-color:#005fa3}h2{font-size:14px;font-weight:700;margin:0 0 6px 0}#rules{max-height:200px;overflow-y:auto;background:#fff;border:1px solid #ddd;border-radius:4px;padding:4px}.rule{display:flex;align-items:center;justify-content:space-between;padding:4px;font-size:13px;border-bottom:1px solid #eee}.rule:last-child{border-bottom:none}.rule span{flex:1;margin:0 8px;word-break:break-all;font-family:monospace;font-size:12px}.rule input[type="checkbox"]{flex-shrink:0}.rule .delete-btn{background:none;border:none;color:#d9534f;font-size:14px;cursor:pointer;padding:2px 4px;line-height:1}.rule .delete-btn:hover{color:#b52b27}
+</style>
 </head>
 <body>
-  <div id="container">
-    <h1>銀盾</h1>
-    <label>
-      <input type="checkbox" id="toggleBlock" />
-      有効
-    </label>
-    <div class="input-section">
-      <input type="text" id="wordInput" placeholder="検閲ワードを追加">
-      <button id="addButton" class="add-btn">追加</button>
-    </div>
-    <ul id="wordList"></ul>
-
-    <div id="footer">
-      <a href="https://abatbeliever.net/app/chrome/#ginzyun" target="_blank" class="footer-link">
-        銀盾v1.0 2024 ABATBeliever.
-      </a>
-    </div>
-  </div>
-  <script src="popup.js"></script>
+<h1>銀盾 Page Blocker</h1>
+<div class="toggle-container">
+  <span class="toggle-label">有効化</span>
+  <label class="toggle-switch">
+    <input type="checkbox" id="enabled">
+    <span class="toggle-slider"></span>
+  </label>
+</div>
+<input type="text" id="pattern-input" placeholder="*://*.example.com/*">
+<button id="add-rule">ルール追加</button>
+<h2>ルール一覧</h2>
+<div id="rules"></div>
+<p><font size="1">銀盾v2.0 2024-2025 ABATBeliever.</font></p>
+<script src="popup.js"></script>
 </body>
 </html>

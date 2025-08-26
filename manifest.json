@@ -1,33 +1,40 @@
 {
   "manifest_version": 3,
-  "name": "銀盾",
-  "version": "1.0",
+  "name": "銀盾 Page Blocker",
+  "version": "2.0",
+  "description": "指定したURLパターンに一致するページの表示をブロックします。全面リニューアルしました。",
   "permissions": [
     "declarativeNetRequest",
+    "scripting",
     "storage",
-    "declarativeNetRequestFeedback"
+    "tabs"
   ],
   "host_permissions": [
     "<all_urls>"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icons/16.png",
-      "48": "icons/48.png",
-      "128": "icons/128.png"
-    }
+    "default_title": "Page Blocker"
   },
+  "web_accessible_resources": [
+    {
+      "resources": ["block.html", "block.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_script.js"],
+      "run_at": "document_start"
+    }
+  ],
   "icons": {
     "16": "icons/16.png",
     "48": "icons/48.png",
     "128": "icons/128.png"
-  },
-  "declarative_net_request": {
-    "rule_resources": [{
-      "id": "ruleset_1",
-      "enabled": true,
-      "path": "rules.json"
-    }]
   }
 }
