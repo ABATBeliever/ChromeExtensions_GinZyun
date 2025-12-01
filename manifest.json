@@ -1,11 +1,10 @@
 {
   "manifest_version": 3,
   "name": "銀盾 Page Blocker",
-  "version": "2.0",
+  "version": "2.1",
   "description": "指定したURLパターンに一致するページの表示をブロックします。全面リニューアルしました。",
   "permissions": [
     "declarativeNetRequest",
-    "scripting",
     "storage",
     "tabs"
   ],
