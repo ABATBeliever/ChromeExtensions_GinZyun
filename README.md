@@ -14,3 +14,5 @@ URL内にルールにあう文字列があった場合、接続を中止しま�
 ・*.xyz* のような表記に対応
 
 最新バージョン:2.1
+
+※ほぼ同じですが、MicrosoftEdgeAddonストア向け版を作りました。: https://github.com/ABATBeliever/ChromeExtensions_GinZyun/tree/ForMicrosoftEdge
