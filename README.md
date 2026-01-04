@@ -1,4 +1,4 @@
-## 銀盾Chrome拡張 GinZyun
+## 銀盾Chrome拡張 GinZyun for EdgeAddon
 ![License](https://img.shields.io/badge/license-MPL-blue.svg)
 ![Version](https://img.shields.io/badge/version-2.1-green.svg)
 ![Version](https://img.shields.io/badge/Language-JS-yellow.svg)
